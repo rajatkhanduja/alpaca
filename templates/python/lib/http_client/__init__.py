@@ -26,7 +26,7 @@ class HttpClient():
 		self.options = {
 			'base': '{{.Api.base}}',{{with .Api.version}}
 			'api_version': '{{.}}',{{end}}
-			'user_agent': 'alpaca/0.1.0 (https://github.com/pksunkara/alpaca)'
+			'user_agent': 'alpaca/{{.Api.alpaca_version}} (https://github.com/pksunkara/alpaca)'
 		}
 
 		self.options.update(options)
@@ -86,7 +86,9 @@ class HttpClient():
 
 		del kwargs['base']
 		del kwargs['user_agent']
-
+{{if .Api.no_verify_ssl}}
+		kwargs['verify'] = False
+{{end}}
 		if method != 'get':
 			kwargs = self.set_body(kwargs)
 

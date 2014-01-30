@@ -1,16 +1,16 @@
 <?php
 
-namespace {{.Pkg.name}}\HttpClient;
+namespace {{call .Fnc.camelize .Pkg.Name}}\HttpClient;
 
 use Guzzle\Http\Client as GuzzleClient;
 use Guzzle\Http\ClientInterface;
 use Guzzle\Http\Message\RequestInterface;
 
-use {{.Pkg.name}}\HttpClient\AuthHandler;
-use {{.Pkg.name}}\HttpClient\ErrorHandler;
-use {{.Pkg.name}}\HttpClient\RequestHandler;
-use {{.Pkg.name}}\HttpClient\Response;
-use {{.Pkg.name}}\HttpClient\ResponseHandler;
+use {{call .Fnc.camelize .Pkg.Name}}\HttpClient\AuthHandler;
+use {{call .Fnc.camelize .Pkg.Name}}\HttpClient\ErrorHandler;
+use {{call .Fnc.camelize .Pkg.Name}}\HttpClient\RequestHandler;
+use {{call .Fnc.camelize .Pkg.Name}}\HttpClient\Response;
+use {{call .Fnc.camelize .Pkg.Name}}\HttpClient\ResponseHandler;
 
 /**
  * Main HttpClient which is used by Api classes
@@ -20,7 +20,7 @@ class HttpClient
     protected $options = array(
         'base'    => '{{.Api.base}}',{{with .Api.version}}
         'api_version' => '{{.}}',{{end}}
-        'user_agent' => 'alpaca/0.1.0 (https://github.com/pksunkara/alpaca)'
+        'user_agent' => 'alpaca/{{.Api.alpaca_version}} (https://github.com/pksunkara/alpaca)'
     );
 
     protected $headers = array();
@@ -48,7 +48,7 @@ class HttpClient
         }
 
         $client = new GuzzleClient($this->options['base'], $this->options);
-        $this->client  = $client;
+        $this->client = $client;
 
         $listener = array(new ErrorHandler(), 'onRequestError');
         $this->client->getEventDispatcher()->addListener('request.error', $listener);
@@ -108,7 +108,9 @@ class HttpClient
 
         unset($options['base']);
         unset($options['user_agent']);
-
+{{if .Api.no_verify_ssl}}
+        $options['verify'] = false;
+{{end}}
         $request = $this->createRequest($httpMethod, $path, null, $headers, $options);
 
         if ($httpMethod != 'GET') {

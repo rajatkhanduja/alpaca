@@ -1,10 +1,10 @@
-require "{{call .Fnc.underscore .Pkg.name}}/http_client/auth_handler"
-require "{{call .Fnc.underscore .Pkg.name}}/http_client/error_handler"
-require "{{call .Fnc.underscore .Pkg.name}}/http_client/request_handler"
-require "{{call .Fnc.underscore .Pkg.name}}/http_client/response"
-require "{{call .Fnc.underscore .Pkg.name}}/http_client/response_handler"
+require "{{call .Fnc.underscore .Pkg.Name}}/http_client/auth_handler"
+require "{{call .Fnc.underscore .Pkg.Name}}/http_client/error_handler"
+require "{{call .Fnc.underscore .Pkg.Name}}/http_client/request_handler"
+require "{{call .Fnc.underscore .Pkg.Name}}/http_client/response"
+require "{{call .Fnc.underscore .Pkg.Name}}/http_client/response_handler"
 
-module {{.Pkg.name}}
+module {{call .Fnc.camelize .Pkg.Name}}
 
   module HttpClient
 
@@ -12,8 +12,6 @@ module {{.Pkg.name}}
     class HttpClient
 
       attr_accessor :options, :headers
-
-      @headers = {}
 
       def initialize(auth = {}, options = {})
 {{if .Api.authorization.oauth}}
@@ -28,7 +26,7 @@ module {{.Pkg.name}}
         @options = {
           :base => "{{.Api.base}}",{{with .Api.version}}
           :api_version => "{{.}}",{{end}}
-          :user_agent => "alpaca/0.1.0 (https://github.com/pksunkara/alpaca)"
+          :user_agent => "alpaca/{{.Api.alpaca_version}} (https://github.com/pksunkara/alpaca)"
         }
 
         @options.update options
@@ -41,10 +39,16 @@ module {{.Pkg.name}}
           @headers.update Hash[@options[:headers].map { |k, v| [k.downcase, v] }]
           @options.delete :headers
         end
+{{if .Api.no_verify_ssl}}
+        @conn_options = {
+          :ssl => { :verify => false }
+        }
 
+        @client = Faraday.new(@options[:base], @conn_options) do |conn|
+{{else}}
         @client = Faraday.new @options[:base] do |conn|
-          conn.use {{.Pkg.name}}::HttpClient::AuthHandler, auth
-          conn.use {{.Pkg.name}}::HttpClient::ErrorHandler
+{{end}}          conn.use {{call .Fnc.camelize .Pkg.Name}}::HttpClient::AuthHandler, auth
+          conn.use {{call .Fnc.camelize .Pkg.Name}}::HttpClient::ErrorHandler
 
           conn.adapter Faraday.default_adapter
         end
@@ -92,7 +96,7 @@ module {{.Pkg.name}}
 
         body = get_body response
 
-        {{.Pkg.name}}::HttpClient::Response.new body, response.status, response.headers
+        {{call .Fnc.camelize .Pkg.Name}}::HttpClient::Response.new body, response.status, response.headers
       end
 
       # Creating a request with the given arguments
@@ -118,12 +122,12 @@ module {{.Pkg.name}}
 
       # Get response body in correct format
       def get_body(response)
-        {{.Pkg.name}}::HttpClient::ResponseHandler.get_body response
+        {{call .Fnc.camelize .Pkg.Name}}::HttpClient::ResponseHandler.get_body response
       end
 
       # Set request body in correct format
       def set_body(options)
-        {{.Pkg.name}}::HttpClient::RequestHandler.set_body options
+        {{call .Fnc.camelize .Pkg.Name}}::HttpClient::RequestHandler.set_body options
       end
 
     end

@@ -2,13 +2,12 @@ package alpaca
 
 import (
 	"bitbucket.org/pkg/inflect"
+	"errors"
 )
 
 func WritePhp(data *Data) {
 	MakeLibraryDir("php")
 	RunTemplate := ChooseTemplate("php")
-
-	name := data.Pkg["name"].(string)
 
 	RunTemplate("gitignore", ".gitignore", data)
 	RunTemplate("composer.json", "composer.json", data)
@@ -16,7 +15,7 @@ func WritePhp(data *Data) {
 
 	MakeDir("lib")
 
-	MakeDir(name)
+	MakeDir(inflect.Camelize(data.Pkg.Name))
 	RunTemplate("lib/Client.php", "Client.php", data)
 
 	MakeDir("Exception")
@@ -50,4 +49,12 @@ func FunctionsPhp(fnc map[string]interface{}) {
 	args["php"] = ArgsFunctionMaker("$", ", ")
 	path["php"] = PathFunctionMaker("'.rawurlencode($$this->", ").'")
 	prnt["php"] = PrntFunctionMaker(false, "    ", "\"", "\"", "array(", ")", "array(", ")", "'", "' => ")
+}
+
+func CheckPhp(data *Data) error {
+	if data.Pkg.Php.Vendor == "" {
+		return errors.New("php.vendor is needed in pkg.json for generating php library")
+	}
+
+	return nil
 }

@@ -18,31 +18,25 @@ Join us at [gitter](https://gitter.im/pksunkara/alpaca) if you need any help. Or
 
 ## Installation
 
-You can download the binaries
+You can download the binaries (v0.2.0)
 
- * Architecture i386 [ [linux](https://dl.bintray.com//content/pksunkara/utils/alpaca_0.1.0_linux_386.tar.gz?direct) / [darwin](https://dl.bintray.com//content/pksunkara/utils/alpaca_0.1.0_darwin_386.zip?direct) / [freebsd](https://dl.bintray.com//content/pksunkara/utils/alpaca_0.1.0_freebsd_386.zip?direct) / [openbsd](https://dl.bintray.com//content/pksunkara/utils/alpaca_0.1.0_openbsd_386.zip?direct) ]
- * Architecture amd64 [ [linux](https://dl.bintray.com//content/pksunkara/utils/alpaca_0.1.0_linux_amd64.tar.gz?direct) / [darwin](https://dl.bintray.com//content/pksunkara/utils/alpaca_0.1.0_darwin_amd64.zip?direct) / [freebsd](https://dl.bintray.com//content/pksunkara/utils/alpaca_0.1.0_freebsd_amd64.zip?direct) / [openbsd](https://dl.bintray.com//content/pksunkara/utils/alpaca_0.1.0_openbsd_amd64.zip?direct) ]
- * Architecture arm [ [linux](https://dl.bintray.com//content/pksunkara/utils/alpaca_0.1.0_linux_arm.tar.gz?direct) / [freebsd](https://dl.bintray.com//content/pksunkara/utils/alpaca_0.1.0_freebsd_arm.zip?direct) ]
+ * Architecture i386 [ [linux](https://dl.bintray.com//content/pksunkara/utils/alpaca_0.2.0_linux_386.tar.gz?direct) / [windows](https://dl.bintray.com//content/pksunkara/utils/alpaca_0.2.0_windows_386.zip?direct) / [darwin](https://dl.bintray.com//content/pksunkara/utils/alpaca_0.2.0_darwin_386.zip?direct) / [freebsd](https://dl.bintray.com//content/pksunkara/utils/alpaca_0.2.0_freebsd_386.zip?direct) / [openbsd](https://dl.bintray.com//content/pksunkara/utils/alpaca_0.2.0_openbsd_386.zip?direct) / [netbsd](https://dl.bintray.com//content/pksunkara/utils/alpaca_0.2.0_netbsd_386.zip?direct) / [plan9](https://dl.bintray.com//content/pksunkara/utils/alpaca_0.2.0_plan9_386.zip?direct) ]
+ * Architecture amd64 [ [linux](https://dl.bintray.com//content/pksunkara/utils/alpaca_0.2.0_linux_amd64.tar.gz?direct) / [windows](https://dl.bintray.com//content/pksunkara/utils/alpaca_0.2.0_windows_amd64.zip?direct) / [darwin](https://dl.bintray.com//content/pksunkara/utils/alpaca_0.2.0_darwin_amd64.zip?direct) / [freebsd](https://dl.bintray.com//content/pksunkara/utils/alpaca_0.2.0_freebsd_amd64.zip?direct) / [openbsd](https://dl.bintray.com//content/pksunkara/utils/alpaca_0.2.0_openbsd_amd64.zip?direct) / [netbsd](https://dl.bintray.com//content/pksunkara/utils/alpaca_0.2.0_netbsd_amd64.zip?direct) ]
+ * Architecture arm [ [linux](https://dl.bintray.com//content/pksunkara/utils/alpaca_0.2.0_linux_arm.tar.gz?direct) / [freebsd](https://dl.bintray.com//content/pksunkara/utils/alpaca_0.2.0_freebsd_arm.zip?direct) / [netbsd](https://dl.bintray.com//content/pksunkara/utils/alpaca_0.2.0_netbsd_arm.zip?direct) ]
 
-Or by using deb packages
+Or by using deb packages (v0.2.0)
 
- * [i386.deb](https://dl.bintray.com//content/pksunkara/utils/alpaca_0.1.0_i386.deb?direct)
- * [amd64.deb](https://dl.bintray.com//content/pksunkara/utils/alpaca_0.1.0_amd64.deb?direct)
- * [armhf.deb](https://dl.bintray.com//content/pksunkara/utils/alpaca_0.1.0_armhf.deb?direct)
+ * [ [i386](https://dl.bintray.com//content/pksunkara/utils/alpaca_0.2.0_i386.deb?direct) / [amd64](https://dl.bintray.com//content/pksunkara/utils/alpaca_0.2.0_amd64.deb?direct) / [armhf](https://dl.bintray.com//content/pksunkara/utils/alpaca_0.2.0_armhf.deb?direct) ]
 
 Or by using golang
 
 ```bash
 # Clone the project into your golang workspace
 $ git clone git://github.com/pksunkara/alpaca
+$ cd alpaca
 
-# Compile templates
-$ go get github.com/jteeuwen/go-bindata
-$ cd alpaca && ./make
-
-# Install the program
-$ go get
-$ go install github.com/pksunkara/alpaca
+# Install program
+$ make && make install
 ```
 
 ## Examples
@@ -58,6 +52,25 @@ $ alpaca </path/to/dir>
 ```
 
 The path here should be a directory with `api.json`, `pkg.json`, `doc.json`
+
+```
+Usage:
+  alpaca [options] <dir>
+
+Application Options:
+  -v, --version    Show version information
+
+Language Options:
+      --no-php     Do not write php library
+      --no-python  Do not write python library
+      --no-ruby    Do not write ruby library
+      --no-node    Do not write node library
+
+Help Options:
+  -h, --help       Show this help message
+```
+
+_Please remove the comments when actually using these json files_
 
 #### pkg.json
 
@@ -99,6 +112,7 @@ All the following fields are required unless mentioned.
 {
   "base": "https://exampleapp.com", // Base URL of the api
   "version": "v1", // Default version for the api (https://api.example.com{/version}/users) [optional]
+  "no_verify_ssl": true, // Do not verify SSL cert [optional] (default: false)
   "authorization": { // Authorization strategies
     "basic" : true, // Basic authentication [optional] (default: false)
     "header": true, // Token in authorization header [optional] (default: false)
@@ -126,7 +140,12 @@ All the following fields are required unless mentioned.
       "profile": { // Name of a method of the api
         "path": "/users/:login/profile", // Url of the api method
         "method": "post", // HTTP method of the api method [optional] (default: get)
-        "params": ["bio"] // Arguments required for the api method [optional]
+        "params": [ // Parameters for the api method [optional]
+          {
+            "name": "bio", // Name of the parameter
+            "required": true // The parameter will become an argument of api method
+          }
+        ]
       }
     }
   }
@@ -142,17 +161,21 @@ The following is filled according to the entries in `api.json`
   "users": { // Name of a class of the api
     "title": "Users", // Title of the api class
     "desc": "Returns user api instance", // Description of the api class
-    "args": [{
-      "desc": "Username of the user", // Description of the argument
-      "value": "pksunkara" // Value of the argument in docs
-    }],
+    "args": { // Arguments of the api class
+      "id": { // Name of the argument
+        "desc": "Username of the user", // Description of the argument
+        "value": "pksunkara" // Value of the argument in docs
+      }
+    },
     "profile": { // Name of a method of the api
       "title": "Edit profile", // Title of the api method
       "desc": "Edit the user's profile", // Description of the api method
-      "params": [{
-        "desc": "Short bio in profile", // Description of the argument
-        "value": "I am awesome!" // Value of the argument in docs
-      }]
+      "params": { // Parameter of the api class
+        "bio": { // Name of the parameter
+          "desc": "Short bio in profile", // Description of the parameter
+          "value": "I am awesome!" // Value of the parameter in docs
+        }
+      }
     }
   }
 }
@@ -173,6 +196,15 @@ The format `html` is always true.
 ### Authorization strategies
 
 Supported are `basic`, `header`, `oauth`
+
+### Language Versions
+
+Supported programming language versions are:
+
+ * __node__: [ 0.8 / 0.9 / 0.10 / 0.11 ]
+ * __php__: [ 5.4 / 5.5 ]
+ * __python__: [ 2.6 / 2.7 / 3.2 / 3.3 ]
+ * __ruby__: [ 1.8.7 / 1.9.1 / 1.9.2 / 1.9.3 / 2.0.0 / 2.1.0 ]
 
 ### Package Managers
 
@@ -195,7 +227,7 @@ __I accept pull requests and guarantee a reply back within a day__
 
 ##### General
 
- * Convert `make` into `Makefile`
+ * Support YAML configuration
 
 ##### Responses
 
@@ -229,6 +261,12 @@ __I accept pull requests and guarantee a reply back within a day__
 
  * The descriptions should be wrapped
  * Align @param descriptions
+
+##### Formats
+
+ * Support WADL
+ * Support RAML
+ * Support API blueprint
 
 ##### Languages
 

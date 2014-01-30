@@ -7,15 +7,13 @@ import (
 	"os"
 )
 
-const (
-	Version = "0.1.0"
-)
-
 func main() {
 
 	// Options for flags package
 	var opts struct {
 		Version bool `short:"v" long:"version" description:"Show version information"`
+
+		Format string `short:"f" long:"format" description:"API description format" value-name:"FORMAT"`
 
 		Langs alpaca.LanguageOptions `group:"Language Options"`
 	}
@@ -35,7 +33,7 @@ func main() {
 
 	// Print version and exit
 	if opts.Version {
-		fmt.Println(Version)
+		fmt.Println(alpaca.Version)
 		os.Exit(0)
 	}
 
@@ -45,5 +43,11 @@ func main() {
 		os.Exit(0)
 	}
 
-	alpaca.WriteLibraries(args[0], &opts.Langs)
+	alpaca.LoadLibraryPath(args[0])
+
+	if opts.Format != "" {
+		alpaca.ConvertFormat(opts.Format)
+	}
+
+	alpaca.WriteLibraries(&opts.Langs)
 }

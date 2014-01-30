@@ -2,11 +2,20 @@ package alpaca
 
 import (
 	"bitbucket.org/pkg/inflect"
+	"encoding/json"
 	"os"
+	"path"
 	"reflect"
 	"regexp"
 	"strconv"
 )
+
+func ReadJSON(name string, v interface{}) {
+	file, err := os.Open(path.Join(LibraryRoot, name))
+	HandleError(err)
+
+	HandleError(json.NewDecoder(file).Decode(v))
+}
 
 func MakeDir(name string) {
 	HandleError(os.Mkdir(name, 0755))
@@ -18,6 +27,10 @@ func MoveDir(name string) {
 }
 
 func ArrayInterfaceToString(inter interface{}) []string {
+	if inter == nil {
+		return []string{}
+	}
+
 	old := inter.([]interface{})
 	new := make([]string, len(old))
 
@@ -29,10 +42,14 @@ func ArrayInterfaceToString(inter interface{}) []string {
 }
 
 func MapKeysToStringArray(inter interface{}, exclude []string) []string {
+	if inter == nil {
+		return []string{}
+	}
+
 	old := inter.(map[string]interface{})
 	new := make([]string, 0, len(old))
 
-	for v, _ := range old {
+	for v := range old {
 		flag := true
 
 		for _, e := range exclude {
@@ -67,9 +84,17 @@ func ArgsFunctionMaker(before, after string) interface{} {
 	return func(args interface{}, options ...bool) string {
 		str := ""
 
-		if args != nil && len(args.([]interface{})) > 0 {
-			for _, v := range ArrayInterfaceToString(args) {
-				str += before + v + after
+		if args != nil {
+			for _, v := range args.([]interface{}) {
+				if reflect.TypeOf(v).String() == "string" {
+					str += before + v.(string) + after
+				} else {
+					val := v.(map[string]interface{})
+
+					if val["required"] != nil && val["required"].(bool) {
+						str += before + val["name"].(string) + after
+					}
+				}
 			}
 
 			if len(options) > 0 && options[0] {
@@ -173,14 +198,14 @@ func PrntFunctionMaker(boolcap bool, tab, strbeg, strend, arrbeg, arrend, objbeg
 			return str
 		}
 
-		for _, v := range args.([]interface{}) {
+		for _, v := range args.(map[string]interface{}) {
 			str += vals(v.(map[string]interface{})["value"]) + sep
 		}
 
 		if !notLast {
 			return str[0 : len(str)-len(sep)]
-		} else {
-			return str
 		}
+
+		return str
 	}
 }

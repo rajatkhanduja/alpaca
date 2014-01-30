@@ -35,7 +35,7 @@ client.HttpClient = function (auth, options) {
   this.options = {
     'base': '{{.Api.base}}',{{with .Api.version}}
     'api_version': '{{.}}',{{end}}
-    'user_agent': 'alpaca/0.1.0 (https://github.com/pksunkara/alpaca)'
+    'user_agent': 'alpaca/{{.Api.alpaca_version}} (https://github.com/pksunkara/alpaca)'
   };
 
   for (var key in options) {
@@ -131,7 +131,9 @@ client.HttpClient.prototype.request = function (path, body, method, options, cal
 
   delete options['base'];
   delete options['user_agent'];
-
+{{if .Api.no_verify_ssl}}
+  reqobj['strictSSL'] = false;
+{{end}}
   if (method != 'GET') {
     reqobj = this.setBody(reqobj, body, options);
   }
